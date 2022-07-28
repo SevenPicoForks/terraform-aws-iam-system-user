@@ -29,3 +29,19 @@ output "ses_smtp_password_v4" {
   value       = join("", compact(local.access_key.*.ses_smtp_password_v4))
   description = "The secret access key converted into an SES SMTP password by applying AWS's Sigv4 conversion algorithm"
 }
+
+output "pgp_key" {
+  description = "PGP key used to encrypt sensitive data for this user"
+  value       = var.pgp_key
+}
+
+output "keybase_credentials_decrypt_command" {
+  # https://stackoverflow.com/questions/36565256/set-the-aws-console-password-for-iam-user-with-terraform
+  description = "Command to decrypt the Keybase encrypted password. Returns empty string if pgp_key is not from keybase"
+  value       = local.keybase_credentials_decrypt_command
+}
+
+output "keybase_credentials_pgp_message" {
+  description = "PGP encrypted message (e.g. suitable for email exchanges). Returns empty string if pgp_key is not from keybase"
+  value       = local.keybase_credentials_pgp_message
+}

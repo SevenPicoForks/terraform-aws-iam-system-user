@@ -4,6 +4,12 @@ variable "force_destroy" {
   default     = false
 }
 
+variable "groups" {
+  description = "List of IAM user groups this user should belong to in the account"
+  type        = list(string)
+  default     = []
+}
+
 variable "path" {
   type        = string
   description = "Path in which to create the user"
@@ -21,6 +27,12 @@ variable "inline_policies_map" {
   description = "Inline policies to attach (descriptive key => policy)"
   default     = {}
 }
+
+variable "pgp_key" {
+  type        = string
+  description = "Provide a base-64 encoded PGP public key, or a keybase username in the form `keybase:username`. Required to encrypt password."
+}
+
 
 variable "policy_arns" {
   type        = list(string)

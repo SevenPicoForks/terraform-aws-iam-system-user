@@ -15,6 +15,13 @@ resource "aws_iam_user" "default" {
   permissions_boundary = var.permissions_boundary
 }
 
+resource "aws_iam_user_group_membership" "default" {
+  count      = module.this.enabled && length(var.groups) > 0 ? 1 : 0
+  user       = aws_iam_user.default[count.index].name
+  groups     = var.groups
+  depends_on = [aws_iam_user.default]
+}
+
 # Generate API credentials
 resource "aws_iam_access_key" "default" {
   count = module.this.enabled && local.create_regular_access_key ? 1 : 0
@@ -61,7 +68,7 @@ resource "aws_iam_user_policy_attachment" "policies" {
 }
 
 module "store_write" {
-  source  = "cloudposse/ssm-parameter-store/aws"
+  source  = "registry.terraform.io/cloudposse/ssm-parameter-store/aws"
   version = "0.9.1"
 
   count = module.this.enabled && var.ssm_enabled && var.create_iam_access_key ? 1 : 0
@@ -84,4 +91,15 @@ module "store_write" {
   ]
 
   context = module.this.context
+}
+
+
+locals {
+  encrypted_credentials = <<EOF
+AWS_ACCESS_KEY_ID=${join("", local.access_key.*.id)}
+AWS_SECRET_ACCESS_KEY=${join("", local.access_key.*.secret)}
+EOF
+  pgp_key_is_keybase               = length(regexall("keybase:", var.pgp_key)) > 0 ? true : false
+  keybase_credentials_pgp_message     = local.pgp_key_is_keybase ? templatefile("${path.module}/templates/keybase_password_pgp_message.txt", { encrypted_password = local.encrypted_credentials }) : ""
+  keybase_credentials_decrypt_command = local.pgp_key_is_keybase ? templatefile("${path.module}/templates/keybase_password_decrypt_command.sh", { encrypted_password = local.encrypted_credentials }) : ""
 }
