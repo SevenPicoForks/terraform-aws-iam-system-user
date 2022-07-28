@@ -100,6 +100,6 @@ AWS_ACCESS_KEY_ID=${join("", local.access_key.*.id)}
 AWS_SECRET_ACCESS_KEY=${join("", local.access_key.*.secret)}
 EOF
   pgp_key_is_keybase               = length(regexall("keybase:", var.pgp_key)) > 0 ? true : false
-  keybase_credentials_pgp_message     = local.pgp_key_is_keybase ? templatefile("${path.module}/templates/keybase_password_pgp_message.txt", { encrypted_password = local.encrypted_credentials }) : ""
-  keybase_credentials_decrypt_command = local.pgp_key_is_keybase ? templatefile("${path.module}/templates/keybase_password_decrypt_command.sh", { encrypted_password = local.encrypted_credentials }) : ""
+  keybase_credentials_pgp_message     = local.pgp_key_is_keybase ? templatefile("${path.module}/templates/keybase_credentials_pgp_message.txt", { encrypted_credentials = local.encrypted_credentials }) : ""
+  keybase_credentials_decrypt_command = local.pgp_key_is_keybase ? templatefile("${path.module}/templates/keybase_credentials_decrypt_command.sh", { encrypted_credentials = local.encrypted_credentials }) : ""
 }
