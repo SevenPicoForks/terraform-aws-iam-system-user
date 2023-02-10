@@ -68,7 +68,7 @@ resource "aws_iam_user_policy_attachment" "policies" {
 }
 
 module "store_write" {
-  source  = "registry.terraform.io/cloudposse/ssm-parameter-store/aws"
+  source  = "cloudposse/ssm-parameter-store/aws"
   version = "0.9.1"
 
   count = module.context.enabled && var.ssm_enabled ? 1 : 0
