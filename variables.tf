@@ -74,3 +74,11 @@ variable "ssm_enabled" {
   description = "Whether or not to write the IAM access key and secret key to SSM Parameter Store"
   default     = true
 }
+
+variable "ssm_ignore_value_changes" {
+  type        = bool
+  description = "Whether or not to ignore value changes of the  SSM Parameter Store items."
+  default     = false
+}
+
+
