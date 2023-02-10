@@ -71,19 +71,20 @@ module "store_write" {
   source  = "registry.terraform.io/cloudposse/ssm-parameter-store/aws"
   version = "0.9.1"
 
-  count = module.context.enabled && var.ssm_enabled && var.create_iam_access_key ? 1 : 0
+  count = module.context.enabled && var.ssm_enabled ? 1 : 0
+#  count = module.context.enabled && var.ssm_enabled && var.create_iam_access_key ? 1 : 0
 
   parameter_write = [
     {
       name        = "/system_user/${local.username}/access_key_id"
-      value       = join("", local.access_key.*.id)
+      value       = try(join("", local.access_key.*.id), "")
       type        = "SecureString"
       overwrite   = true
       description = "The AWS_ACCESS_KEY_ID for the ${local.username} user."
     },
     {
       name        = "/system_user/${local.username}/secret_access_key"
-      value       = join("", local.access_key.*.secret)
+      value       = try(join("", local.access_key.*.secret), "")
       type        = "SecureString"
       overwrite   = true
       description = "The AWS_SECRET_ACCESS_KEY for the ${local.username} user."
@@ -96,8 +97,8 @@ module "store_write" {
 
 locals {
   encrypted_credentials               = <<EOF
-AWS_ACCESS_KEY_ID=${join("", local.access_key.*.id)}
-AWS_SECRET_ACCESS_KEY=${join("", local.access_key.*.secret)}
+AWS_ACCESS_KEY_ID=${try(join("", local.access_key.*.id), "")}
+AWS_SECRET_ACCESS_KEY=${try(join("", local.access_key.*.secret), "")}
 EOF
   pgp_key_is_keybase                  = length(regexall("keybase:", var.pgp_key)) > 0 ? true : false
   keybase_credentials_pgp_message     = local.pgp_key_is_keybase ? templatefile("${path.module}/templates/keybase_credentials_pgp_message.txt", { encrypted_credentials = local.encrypted_credentials }) : ""
