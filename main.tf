@@ -77,14 +77,14 @@ module "store_write" {
   parameter_write = [
     {
       name        = "/system_user/${local.username}/access_key_id"
-      value       = try(join("", local.access_key.*.id), "")
+      value       = try(join("", local.access_key.*.id), "unset")
       type        = "SecureString"
       overwrite   = true
       description = "The AWS_ACCESS_KEY_ID for the ${local.username} user."
     },
     {
       name        = "/system_user/${local.username}/secret_access_key"
-      value       = try(join("", local.access_key.*.secret), "")
+      value       = try(join("", local.access_key.*.secret), "unset")
       type        = "SecureString"
       overwrite   = true
       description = "The AWS_SECRET_ACCESS_KEY for the ${local.username} user."
