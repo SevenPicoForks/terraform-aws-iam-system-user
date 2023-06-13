@@ -10,6 +10,7 @@ module "iam_system_user" {
   source = "../../"
 
   force_destroy = true
+  pgp_key = ""
 
   context = module.this.context
 }
