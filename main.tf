@@ -72,7 +72,7 @@ module "store_write" {
   version = "0.9.1"
 
   count = module.context.enabled && var.ssm_enabled ? 1 : 0
-#  count = module.context.enabled && var.ssm_enabled && var.create_iam_access_key ? 1 : 0
+  #  count = module.context.enabled && var.ssm_enabled && var.create_iam_access_key ? 1 : 0
 
   ignore_value_changes = var.ssm_ignore_value_changes
   parameter_write = [
