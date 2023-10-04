@@ -67,14 +67,14 @@ module "store_write" {
   parameter_write = concat([
     {
       name        = local.key_id_ssm_path
-      value       = try(join("", aws_iam_access_key.default[0].id), "unset")
+      value       = aws_iam_access_key.default[0].id
       type        = "SecureString"
       overwrite   = true
       description = "The AWS_ACCESS_KEY_ID for the ${local.username} user."
     },
     {
       name        = local.secret_ssm_path
-      value       = try(join("", aws_iam_access_key.default[0].secret), "unset")
+      value       = aws_iam_access_key.default[0].secret
       type        = "SecureString"
       overwrite   = true
       description = "The AWS_SECRET_ACCESS_KEY for the ${local.username} user."
