@@ -4,12 +4,6 @@ variable "force_destroy" {
   default     = false
 }
 
-variable "groups" {
-  description = "List of IAM user groups this user should belong to in the account"
-  type        = list(string)
-  default     = []
-}
-
 variable "path" {
   type        = string
   description = "Path in which to create the user"
@@ -27,12 +21,6 @@ variable "inline_policies_map" {
   description = "Inline policies to attach (descriptive key => policy)"
   default     = {}
 }
-
-variable "pgp_key" {
-  type        = string
-  description = "Provide a base-64 encoded PGP public key, or a keybase username in the form `keybase:username`. Required to encrypt password."
-}
-
 
 variable "policy_arns" {
   type        = list(string)
@@ -71,13 +59,24 @@ variable "iam_access_key_max_age" {
 
 variable "ssm_enabled" {
   type        = bool
-  description = "Whether or not to write the IAM access key and secret key to SSM Parameter Store"
+  description = <<-EOT
+    Set `true` to store secrets in SSM Parameter Store, `
+    false` to store secrets in Terraform state as outputs.
+    Since Terraform state would contain the secrets in plaintext,
+    use of SSM Parameter Store is recommended.
+    EOT
   default     = true
 }
 
 variable "ssm_ignore_value_changes" {
   type        = bool
   description = "Whether or not to ignore value changes of the  SSM Parameter Store items."
+  default     = false
+}
+
+variable "ssm_ses_smtp_password_enabled" {
+  type        = bool
+  description = "Whether or not to create an SES SMTP password"
   default     = false
 }
 
