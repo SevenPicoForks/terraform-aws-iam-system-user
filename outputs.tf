@@ -13,35 +13,50 @@ output "user_unique_id" {
   description = "The unique ID assigned by AWS"
 }
 
+output "ssm_enabled" {
+  value       = local.ssm_enabled
+  description = <<-EOT
+    `true` when secrets are stored in SSM Parameter store,
+    `false` when secrets are stored in Terraform state as outputs.
+    EOT
+}
+
 output "access_key_id" {
-  value       = try(join("", local.access_key.*.id), "")
+  value       = local.create_iam_access_key ? aws_iam_access_key.default[0].id : null
   description = "The access key ID"
 }
 
 output "secret_access_key" {
   sensitive   = true
-  value       = try(join("", local.access_key.*.secret), "")
-  description = "The secret access key. This will be written to the state file in plain-text"
+  value       = local.ssm_enabled ? null : join("", aws_iam_access_key.default.*.secret)
+  description = <<-EOT
+    When `ssm_enabled` is `false`, this is the secret access key for the IAM user.
+    This will be written to the state file in plain-text.
+    When `ssm_enabled` is `true`, this output will be empty to keep the value secure.
+    EOT
 }
 
 output "ses_smtp_password_v4" {
   sensitive   = true
-  value       = try(join("", compact(local.access_key.*.ses_smtp_password_v4)), "")
-  description = "The secret access key converted into an SES SMTP password by applying AWS's Sigv4 conversion algorithm"
+  value       = local.ssm_enabled ? null : join("", aws_iam_access_key.default.*.ses_smtp_password_v4)
+  description = <<-EOT
+    When `ssm_enabled` is false, this is the secret access key converted into an SES SMTP password
+    by applying AWS's Sigv4 conversion algorithm. It will be written to the Terraform state file in plaintext.
+    When `ssm_enabled` is `true`, this output will be empty to keep the value secure.
+    EOT
 }
 
-output "pgp_key" {
-  description = "PGP key used to encrypt sensitive data for this user"
-  value       = var.pgp_key
+output "access_key_id_ssm_path" {
+  value       = local.ssm_enabled ? local.key_id_ssm_path : null
+  description = "The SSM Path under which the IAM User's access key ID is stored"
 }
 
-output "keybase_credentials_decrypt_command" {
-  # https://stackoverflow.com/questions/36565256/set-the-aws-console-password-for-iam-user-with-terraform
-  description = "Command to decrypt the Keybase encrypted password. Returns empty string if pgp_key is not from keybase"
-  value       = local.keybase_credentials_decrypt_command
+output "secret_access_key_ssm_path" {
+  value       = local.ssm_enabled ? local.secret_ssm_path : null
+  description = "The SSM Path under which the IAM User's secret access key is stored"
 }
 
-output "keybase_credentials_pgp_message" {
-  description = "PGP encrypted message (e.g. suitable for email exchanges). Returns empty string if pgp_key is not from keybase"
-  value       = local.keybase_credentials_pgp_message
+output "ses_smtp_password_v4_ssm_path" {
+  value       = local.ssm_enabled && var.ssm_ses_smtp_password_enabled ? local.smtp_password_ssm_path : null
+  description = "The SSM Path under which the IAM User's SES SMTP password is stored"
 }
