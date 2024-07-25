@@ -80,4 +80,10 @@ variable "ssm_ses_smtp_password_enabled" {
   default     = false
 }
 
+variable "create_aws_cli_credentials" {
+  description = "Boolean flag to determine if AWS CLI credentials should be created."
+  type        = bool
+  default     = false
+}
+
 
