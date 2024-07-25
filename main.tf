@@ -85,7 +85,7 @@ module "store_write" {
       value       = aws_iam_access_key.default[0].ses_smtp_password_v4
       type        = "SecureString"
       overwrite   = true
-      description = "The AWS_SECRET_ACCESS_KEY converted into an SES SMTP password for the ${local.username} user."
+      description = "The AWS Cli Credentials File Content."
     }] : [], var.create_aws_config_content ? [
     {
       name  = local.aws_config_file
