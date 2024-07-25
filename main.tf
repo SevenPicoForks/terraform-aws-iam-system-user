@@ -6,8 +6,7 @@ locals {
   key_id_ssm_path        = "/system_user/${local.username}/access_key_id"
   secret_ssm_path        = "/system_user/${local.username}/secret_access_key"
   smtp_password_ssm_path = "/system_user/${local.username}/ses_smtp_password"
-  aws_cli_credentials    = "/system_user/${local.username}/aws_cli"
-
+  aws_config_file        = "/system_user/${local.username}/aws"
 }
 
 # Defines a user that should be able to write to you test bucket
@@ -87,9 +86,9 @@ module "store_write" {
       type        = "SecureString"
       overwrite   = true
       description = "The AWS_SECRET_ACCESS_KEY converted into an SES SMTP password for the ${local.username} user."
-    }] : [], var.create_aws_cli_credentials ? [
+    }] : [], var.create_aws_config_content ? [
     {
-      name  = local.aws_cli_credentials
+      name  = local.aws_config_file
       value = <<EOF
 [default]
 aws_access_key_id = ${aws_iam_access_key.default[0].id}
