@@ -93,6 +93,7 @@ module "store_write" {
 [default]
 aws_access_key_id = ${aws_iam_access_key.default[0].id}
 aws_secret_access_key = ${aws_iam_access_key.default[0].secret}
+region = ${var.region}
 EOF
     }] : []
   )
