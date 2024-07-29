@@ -1,16 +1,16 @@
 # The AWS region currently being used.
 data "aws_region" "current" {
-  count = module.context.enabled || var.preserve_if_disabled ? 1 : 0
+  count = module.context.enabled ? 1 : 0
 }
 
 # The AWS account id
 data "aws_caller_identity" "current" {
-  count = module.context.enabled || var.preserve_if_disabled ? 1 : 0
+  count = module.context.enabled ? 1 : 0
 }
 
 # The AWS partition (commercial or govcloud)
 data "aws_partition" "current" {
-  count = module.context.enabled || var.preserve_if_disabled ? 1 : 0
+  count = module.context.enabled ? 1 : 0
 }
 
 locals {
